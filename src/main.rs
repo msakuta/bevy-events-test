@@ -11,7 +11,7 @@ fn main() {
         .add_plugins(DefaultPlugins)
         .add_message::<MyMessage>()
         .insert_resource(Counter(0))
-        .add_systems(Update, (start_update, event_producer, event_consumer))
+        .add_systems(Update, (start_update, message_producer, message_consumer))
         .run();
 }
 
@@ -23,13 +23,13 @@ fn start_update(counter: Res<Counter>, mut close_writer: MessageWriter<AppExit>)
     }
 }
 
-fn event_producer(mut counter: ResMut<Counter>, mut writer: MessageWriter<MyMessage>) {
+fn message_producer(mut counter: ResMut<Counter>, mut writer: MessageWriter<MyMessage>) {
     println!("Sending MyMessage({})!", counter.0);
     writer.write(MyMessage(counter.0));
     counter.0 += 1;
 }
 
-fn event_consumer(mut reader: MessageReader<MyMessage>) {
+fn message_consumer(mut reader: MessageReader<MyMessage>) {
     for event in reader.read() {
         println!("MyMessage({}) received!", event.0);
     }
