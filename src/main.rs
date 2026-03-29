@@ -1,4 +1,4 @@
-use bevy::{prelude::*, window::WindowCloseRequested};
+use bevy::prelude::*;
 
 #[derive(Message)]
 struct MyMessage(usize);
@@ -11,17 +11,13 @@ fn main() {
         .add_plugins(DefaultPlugins)
         .add_message::<MyMessage>()
         .insert_resource(Counter(0))
-        .add_systems(Update, (start_update, event_consumer, event_producer))
+        .add_systems(Update, (start_update, event_producer, event_consumer))
         .run();
 }
 
-fn start_update(
-    counter: Res<Counter>,
-    window: Single<Entity, With<Window>>,
-    mut close_writer: MessageWriter<WindowCloseRequested>,
-) {
+fn start_update(counter: Res<Counter>, mut close_writer: MessageWriter<AppExit>) {
     if 3 <= counter.0 {
-        close_writer.write(WindowCloseRequested { window: *window });
+        close_writer.write(AppExit::Success);
     } else {
         println!("start_update ({})!", counter.0);
     }
